@@ -31,16 +31,7 @@ from prep_and_train import (
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-app = FastAPI(title="Toronto Bikeshare Forecast API")
-
-# CORS
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+from contextlib import asynccontextmanager
 
 # Global state
 model = None
@@ -68,8 +59,8 @@ class ForecastResponse(BaseModel):
     history: List[HistoryPoint]
     forecast: float
 
-@app.on_event("startup")
-async def load_resources():
+@asynccontextmanager
+async def lifespan(app: FastAPI):
     global model, station_to_idx, idx_to_station, station_metadata, latest_sequences, config, device
     
     logger.info("Loading resources...")
@@ -79,12 +70,19 @@ async def load_resources():
     fetch_station_info()
     
     # 2. Fetch Ridership Data (Open Data API)
-    # Only fetch latest year to save time/bandwidth
+    # We only fetch the most recent year of data to keep things fast and avoid using too much bandwidth
     logger.info("Fetching latest ridership data...")
     fetch_latest_data(latest_only=True)
     
     # 3. Load Station Metadata
     try:
+        # Define paths for model and data (assuming they are in a 'model' and 'data' directory relative to the script)
+        # Define paths for model and data
+        # SCRIPT_DIR is .../backend, so parent is the project root
+        ROOT_DIR = Path(__file__).parent.parent
+        MODEL_PATH = ROOT_DIR / "artifacts" / "station_demand_gru.pt"
+        STATION_INFO_PATH = ROOT_DIR / "data" / "station_information.json"
+
         if STATION_INFO_PATH.exists():
             with open(STATION_INFO_PATH, "r") as f:
                 stations = json.load(f)
@@ -121,6 +119,7 @@ async def load_resources():
     # 5. Load Recent Data for Inference
     try:
         logger.info("Loading recent data for inference context...")
+        # We'll try to use the history setting from the model config, but we'll fall back to a default if it's missing
         history_days = config.get("history_days", 14) 
         
         # Helper to load recent data
