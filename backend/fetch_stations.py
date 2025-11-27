@@ -26,6 +26,8 @@ def fetch_station_info():
                 })
             
             # Save to file
+            if not DATA_DIR.exists():
+                os.makedirs(DATA_DIR)
             with open(OUTPUT_FILE, "w") as f:
                 json.dump(stations, f, indent=2)
             
