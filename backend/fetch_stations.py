@@ -7,7 +7,7 @@ GBFS_URL = "https://tor.publicbikesystem.net/ube/gbfs/v1/en/station_information"
 DATA_DIR = Path("data")
 OUTPUT_FILE = DATA_DIR / "station_information.json"
 
-def fetch_stations():
+def fetch_station_info():
     print(f"Fetching station data from {GBFS_URL}...")
     try:
         response = requests.get(GBFS_URL)
@@ -42,4 +42,4 @@ def fetch_stations():
 if __name__ == "__main__":
     if not DATA_DIR.exists():
         os.makedirs(DATA_DIR)
-    fetch_stations()
+    fetch_station_info()

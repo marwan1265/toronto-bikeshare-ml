@@ -5,8 +5,7 @@ from __future__ import annotations
 
 import os
 
-# Force OpenMP to avoid shared-memory segments that are unavailable in
-# constrained/sandboxed environments.
+# We're forcing OpenMP to avoid shared-memory issues that can happen in some restricted environments.
 os.environ.setdefault("KMP_CREATE_SHM", "0")
 os.environ.setdefault("OMP_NUM_THREADS", "1")
 
@@ -363,7 +362,7 @@ def expand_station_timeseries(daily: pd.DataFrame) -> pd.DataFrame:
         indexed.index.name = "trip_date"
         indexed = indexed.reset_index()
         indexed["start_station_id"] = station_id
-        # fill missing counts with zero, other features with zero as a reasonable default
+        # We'll fill any missing counts with zero, and use zero as a safe default for other features too
         indexed["trip_count"] = indexed["trip_count"].fillna(0)
         for col in feature_cols:
             if col != "trip_count":
@@ -401,7 +400,7 @@ def build_feature_arrays(
 
         features = np.stack([log_counts, dow_sin, dow_cos], axis=1)
         sequences_per_station[station_id] = features
-        targets_per_station[station_id] = log_counts  # using same transform for targets
+        targets_per_station[station_id] = log_counts  # We're using the same transformation for the targets
         dates_per_station[station_id] = group["trip_date"]
 
     return station_ids, station_to_idx, sequences_per_station, targets_per_station, dates_per_station

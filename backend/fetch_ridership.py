@@ -31,8 +31,8 @@ def fetch_latest_data(latest_only: bool = False):
     print(f"Found {len(resources)} resources available.")
 
     # 2. Iterate and download CSVs
-    # We look for resources that are likely ridership CSVs
-    # Usually named "Bike share ridership YYYY-MM" or similar
+    # We're looking for files that seem to be ridership CSVs.
+    # They are usually named something like "Bike share ridership YYYY-MM".
     
     if not DATA_DIR.exists():
         os.makedirs(DATA_DIR)
@@ -40,7 +40,7 @@ def fetch_latest_data(latest_only: bool = False):
     import zipfile
     import io
 
-    # Collect valid resources first
+    # Let's gather all the valid resources first
     candidates = []
     for res in resources:
         name = res["name"]
@@ -57,7 +57,7 @@ def fetch_latest_data(latest_only: bool = False):
                     "fmt": fmt
                 })
     
-    # Sort by year descending
+    # Sort them so the newest years come first
     candidates.sort(key=lambda x: x["year"], reverse=True)
     
     if latest_only and candidates:
@@ -87,7 +87,7 @@ def fetch_latest_data(latest_only: bool = False):
                 with zipfile.ZipFile(io.BytesIO(resp.content)) as z:
                     z.extractall(target_dir)
             else:
-                # It's a CSV
+                # It looks like a CSV file
                 if not target_dir.exists():
                     os.makedirs(target_dir)
                 filename = f"{name}.csv"

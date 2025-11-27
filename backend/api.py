@@ -121,7 +121,6 @@ async def load_resources():
     # 5. Load Recent Data for Inference
     try:
         logger.info("Loading recent data for inference context...")
-        # Use history_days from model config if available, otherwise default
         history_days = config.get("history_days", 14) 
         
         # Helper to load recent data
@@ -133,8 +132,7 @@ async def load_resources():
                 
             trips = load_all_trips(csv_paths)
             daily = aggregate_daily_counts(trips)
-            # We don't filter by min history here strictly, or maybe we should?
-            # Let's just expand
+
             expanded = expand_station_timeseries(daily)
             
             # Build features
@@ -177,7 +175,6 @@ app.add_middleware(
 async def get_stations():
     results = []
     
-    # Batch prediction could be optimized, but loop is fine for ~1000 stations for now
     with torch.no_grad():
         for sid, meta in station_metadata.items():
             pred_value = 0.0
@@ -221,10 +218,8 @@ async def get_prediction(station_id: str):
             pred_value = float(np.expm1(pred_log.cpu().numpy())[0])
             pred_value = max(0.0, pred_value)
             
-            # Reconstruct history from the sequence (approximate, since we only have features)
-            # Feature 0 is log(count + 1)
-            # We don't have the dates easily accessible here without more plumbing, 
-            # so we'll just return indices for now or mock dates
+            # Reconstructing the history from the sequence.
+            # Feature 0 is log(count + 1).
             seq_np = seq.squeeze(0).cpu().numpy()
             for i in range(len(seq_np)):
                 log_cnt = seq_np[i, 0]
@@ -245,14 +240,14 @@ def health():
     return {"status": "ok", "stations_loaded": len(station_metadata), "model_loaded": model is not None}
 
 # Serve Frontend
-# Mount the assets folder (JS/CSS)
+# Set up the assets folder so the frontend can load its JavaScript and CSS files
 app.mount("/assets", StaticFiles(directory="web-ui/dist/assets"), name="assets")
 
 # Catch-all route to serve index.html (for React Router)
 @app.get("/{full_path:path}")
 async def serve_react_app(full_path: str):
-    # If the API route wasn't matched above, serve the frontend
-    # Check if file exists in dist (e.g. favicon.ico)
+    # If the request didn't match any API routes, we'll serve the frontend application.
+    # First, check if the file exists in the dist folder (like favicon.ico).
     file_path = Path(f"web-ui/dist/{full_path}")
     if file_path.exists() and file_path.is_file():
         return FileResponse(file_path)
