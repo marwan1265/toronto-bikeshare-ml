@@ -11,7 +11,7 @@ export function StationPanel({ station, onClose }) {
         if (!station) return
 
         setLoading(true)
-        axios.get(`http://127.0.0.1:8000/predict/${station.station_id}`)
+        axios.get(`/predict/${station.station_id}`)
             .then(res => {
                 setData(res.data)
                 setLoading(false)

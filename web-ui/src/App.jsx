@@ -11,7 +11,7 @@ function App() {
 
   useEffect(() => {
     // Fetch stations from backend
-    axios.get('http://127.0.0.1:8000/stations')
+    axios.get('/stations')
       .then(res => {
         setStations(res.data)
         setLoading(false)
