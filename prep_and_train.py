@@ -5,7 +5,8 @@ from __future__ import annotations
 
 import os
 
-# We're forcing OpenMP to avoid shared-memory issues that can happen in some restricted environments.
+# Force OpenMP to avoid shared-memory segments that are unavailable in
+# constrained/sandboxed environments.
 os.environ.setdefault("KMP_CREATE_SHM", "0")
 os.environ.setdefault("OMP_NUM_THREADS", "1")
 
