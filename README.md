@@ -1,13 +1,4 @@
----
-title: Toronto Bikeshare AI
-emoji: 🚲
-colorFrom: blue
-colorTo: indigo
-sdk: docker
-app_port: 7860
----
-
-# Toronto Bikeshare AI Forecaster 🚲
+# Toronto Bikeshare ML Forecaster 
 
 [**View Live Demo on Hugging Face Spaces**](https://huggingface.co/spaces/marwan1265/toronto-bikeshare-ML)
 
