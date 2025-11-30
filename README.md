@@ -58,3 +58,17 @@ The easiest way to run the application locally is using Docker. This ensures all
 
 4.  **Access the App**
     Open your browser and navigate to `http://localhost:7860`.
+
+
+## AI Usage
+
+I used AI tools to assist with code completion, data analysis, and deployment debugging for this project. Specifically:
+
+1.  **Code Completion**: I utilized AI-powered tab completion features to accelerate the coding process.
+
+2.  **Data Analysis & Interpretation**: I used an AI assistant to help interpret my model's performance metrics and gain a deeper understanding of the results. I provided the [metrics.json](cci:7://file:///Users/marwan/toronto-bikeshare-ml/artifacts/metrics.json:0:0-0:0) file containing the loss, RMSE, and MAE values and used the following prompt to generate an explanation and suggestions for improvement:
+    > "You are an expert data scientist, especially proficient in evaluating model performace from training metrics. Given my metrics.json file which includes the loss, rmse, and mae after training my GRU prediction model. explain to me in leyman terms how accurate my model is and suggest ways I could improve it further, also how do I make sure that I did not overfit."
+    
+This analysis helped me understand the accuracy of my model in layman's terms and provided actionable insights for future improvements and overfitting prevention.
+
+3.  **Deployment Debugging**: I encountered a bug when attempting to upload my trained model ([station_demand_gru.pt](cci:7://file:///Users/marwan/toronto-bikeshare-ml/artifacts/station_demand_gru.pt:0:0-0:0)) to Hugging Face Spaces due to its large file size. Since this was my first time hosting on Hugging Face Spaces, I used AI to debug the issue. The AI suggested creating a `.gitattributes` file and utilizing Git LFS (Large File Storage) to handle the large model artifact, which resolved the deployment error.
